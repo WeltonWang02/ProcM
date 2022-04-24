@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys, argparse
 import os 
 from tabulate import tabulate
@@ -41,7 +43,7 @@ def run_command(parser, args):
         else:
           print("Please pass one of the follow: --enable, --disable, --init")
   
-    elif args.command == "procm":
+    elif args.command == "procs":
       """
         Manage individual processes
 
@@ -135,7 +137,7 @@ def run():
   """
   args = sys.argv
   
-  parser = argparse.ArgumentParser(prog='cli.py', description='Manage and monitor python processes', epilog="See '<command> --help' for options.")
+  parser = argparse.ArgumentParser(prog='procm-cli', description='Manage and monitor python processes', epilog="See '<command> --help' for options.")
   subparsers = parser.add_subparsers(dest='command', help='Commands')
 
   core_parser = subparsers.add_parser('core', help='Manage runtime status')
@@ -144,7 +146,7 @@ def run():
   core_parser.add_argument("--init", action='store_true', help="Initilizes system-d service if not created")
   core_parser.set_defaults(func=run_command)
 
-  proc_parser = subparsers.add_parser('procm', help='Manage process')
+  proc_parser = subparsers.add_parser('procs', help='Manage process')
   """ No argument functions """
   proc_parser.add_argument('-l', '--list', action='store_true', required=False, help='List managed processes')
   proc_parser.add_argument('--stop-all', action='store_true', required=False, help='Stop all running processes')
