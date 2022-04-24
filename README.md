@@ -8,8 +8,8 @@ Managing the lifecycle of scripts, ensuring they run after reboot/crash
 ## Usage
 Clone the repository and install dependencies, then setup the cli:
 ```bash
-git clone https://github.com/WeltonWang02/PythonProcM.git
-cd PythonProcM
+git clone https://github.com/WeltonWang02/ProcM.git
+cd ProcM
 pip3 install -r requirements.txt
 chmod +x src/procm-cli
 ```
@@ -44,6 +44,7 @@ optional arguments:
   --name NAME        [--add, --delete, --restart] : Set/filter by full process
                      name. Default: filename
   --path PATH        [--delete, --restart] : Filter by partial process path
+  --pwd PATH         [--add] : Set the pwd when running the script
 ```
 ## Examples
 
