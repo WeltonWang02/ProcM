@@ -55,7 +55,7 @@ def delete_processes(proc : dict):
   deleted = config.delete_proc(proc)
 
   for proc in deleted:
-    socket.send(f"stop {proc.name}")
+    socket.send(f"stop {proc['name']}")
     
   socket.send("r")
   return len(deleted)
