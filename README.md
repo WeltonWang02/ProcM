@@ -48,24 +48,31 @@ optional arguments:
 ## Examples
 
 **Case:** Setup a script located at /home/user/script.py called "Script"
+
 **Run:** `./procm-cli procs --add /home/user/script.py --name Script`
 
 **Case:** Setup a script located at /home/user/script.py called "Script" running Python 2
+
 **Run:** `./procm-cli procs --add /home/user/script.py --name Script --runtime /usr/bin/python2`
 
 **Case:** Delete a script called "Script"
+
 **Run:** `./procm-cli procs --delete --name Script`
 
 **Case:** Delete all scripts that run the file script.py
+
 **Run:** `./procm-cli procs --delete --path script.py`
 
 **Case:** Disable (prevent run at startup) all scripts that run the file script.py
+
 **Run:** `./procm-cli procs --disable --path script.py`
 
 **Case:** Restart all processes
+
 **Run:** `./procm-cli procs --restart-all`
 
 **Case:** Stop all "disabled" processes
+
 **Run:** `./procm-cli procs --stop-all && ./procm-cli procs --start-all`
 
 ## TODO
