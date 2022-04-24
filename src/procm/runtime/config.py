@@ -53,7 +53,6 @@ class Config():
       if len(missing) > 0:
         raise ConfigFileError(f"Invalid config file process item: missing {missing} key in: {process}")
     
-
   def reload(self):
     """
       Re-reads the config file and updates config variable
