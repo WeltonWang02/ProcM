@@ -1,0 +1,178 @@
+import sys, argparse
+import os 
+from tabulate import tabulate
+from pathlib import Path
+import procm.runtime as procm
+
+def run_command(parser, args):
+    """
+      Handle command parsing and function calls
+
+      @return
+        None
+    """
+    if args.command == "core":
+        """
+          Function calls for core config management
+
+          - Disables systemd service on boot
+          - Enabled systemd service on boot
+          - Creates systemd service if not present or valid
+        """
+        if args.disable:
+          if not procm.systemd.set_systemd(False):
+            print("ERROR: Systemd service does not exist. Run --init")
+            sys.exit(1)
+          print("Systemd service successfully disabled")
+            
+        elif args.enable:
+          if not procm.systemd.set_systemd(True):
+            print("ERROR: Systemd service does not exist. Run --init")
+            sys.exit(1)
+          print("Systemd service successfully enabled")        
+
+        elif args.init:
+          if procm.systemd.detect_systemd():
+            print("ERROR: Systemd service file already exists")
+            sys.exit(2)
+          procm.systemd.write_systemd()
+          print("Systemd service successfully created")
+
+        else:
+          print("Please pass one of the follow: --enable, --disable, --init")
+  
+    elif args.command == "procm":
+      """
+        Manage individual processes
+
+        - List all processes
+        - Add a new process
+        - Deletes a process by filter
+        - Stop, start, or restart a process by filter
+        - Stop, start, or restart all processes
+        - Enable or disable processes
+      """
+      if args.list:
+        procs = procm.core.fetch_processes()
+        broken = procm.core.fetch_broken_processes()
+        if len(procs) > 0:
+          print(tabulate(procs, headers=['Name', 'File', 'Status', "Runtime", "Running"]))
+
+          if len(broken) > 0:
+            print("\nThe following procs are currently invalid:\n")
+            print(tabulate(broken, headers=['Name', 'File', 'Status', "Runtime", "Running"]))
+        else:
+          print("No processes set. Add one with --add")
+
+      elif args.add:
+        proc = {
+          "path" : args.add,
+          "status" : True,
+          "name" : Path(args.add).stem
+        }
+        
+        if args.runtime:
+          proc['runtime'] = args.runtime
+        if args.name:
+          proc['name'] = args.name
+
+        if " " in proc['name']:
+          print("ERROR: Process name cannot have spaces")
+          sys.exit(7)
+        
+        print(procm.core.append_process(proc))
+
+      elif (args.delete or args.start or args.restart or args.stop or args.enable or args.disable) and not (args.name or args.path):
+        """ Precondition check """
+        print("ERROR: Please pass either --path or --name")
+        sys.exit(8)
+        
+      elif args.delete:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.delete_processes(crit)} process(es) have been removed")
+
+      elif args.start:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.manage_processes(crit, 'start')} process(es) have been started")
+
+      elif args.restart:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.manage_processes(crit, 'restart')} process(es) have been restarted")
+
+      elif args.stop:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.manage_processes(crit, 'stop')} process(es) have been stopped")
+
+      elif args.restart_all:
+        procm.core.manage_all_processes('restart')
+        print(f"All processes have been restarted")
+
+      elif args.start_all:
+        procm.core.manage_all_processes('start')
+        print("All processes have been started")
+
+      elif args.stop_all:
+        procm.core.manage_all_processes('stop')
+        print("All processes have been stopped")
+
+      elif args.enable:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.toggle_processes(crit, True)} process(es) have been enabled")
+        
+      elif args.disable:
+        crit = {"name": args.name, "path": args.path}
+        print(f"{procm.core.toggle_processes(crit, False)} process(es) have been disabled")        
+        
+      else:
+        print("ERROR: Please choose an action")
+
+    else:
+        print("ERROR: Invalid command called.")
+
+def run():
+  """
+    Main function routine
+  """
+  args = sys.argv
+  
+  parser = argparse.ArgumentParser(prog='cli.py', description='Manage and monitor python processes', epilog="See '<command> --help' for options.")
+  subparsers = parser.add_subparsers(dest='command', help='Commands')
+
+  core_parser = subparsers.add_parser('core', help='Manage runtime status')
+  core_parser.add_argument("--disable", action='store_true', help="Disables auto-startup at boot")
+  core_parser.add_argument("--enable", action='store_true', help="Enable auto-startup at boot")
+  core_parser.add_argument("--init", action='store_true', help="Initilizes system-d service if not created")
+  core_parser.set_defaults(func=run_command)
+
+  proc_parser = subparsers.add_parser('procm', help='Manage process')
+  """ No argument functions """
+  proc_parser.add_argument('-l', '--list', action='store_true', required=False, help='List managed processes')
+  proc_parser.add_argument('--stop-all', action='store_true', required=False, help='Stop all running processes')
+  proc_parser.add_argument('--start-all', action='store_true', required=False, help='Start all stopped, enabled processes')
+  proc_parser.add_argument('--restart-all', action='store_true', required=False, help='Restart all enabled processes')
+  """ Process action funcions """
+  proc_parser.add_argument('-a', '--add', required=False, help='Add a process by full path')
+  proc_parser.add_argument('-d', '--delete', required=False, action='store_true', help='Delete a process. Use with --name or --path')
+  proc_parser.add_argument('-r', '--restart', required=False, action='store_true', help='Restart process(es. Use with --name or --path')
+  proc_parser.add_argument('-dl', '--disable', required=False, action='store_true', help='Delete a process. Use with --name or --path')
+  proc_parser.add_argument('-el', '--enable', required=False, action='store_true', help='Restart process(es. Use with --name or --path')
+  proc_parser.add_argument('-s', '--start', required=False, action='store_true', help='Start process(es. Use with --name or --path')
+  proc_parser.add_argument('-t', '--stop', required=False, action='store_true', help='Stop process(es. Use with --name or --path')
+  """ Filter flags """
+  proc_parser.add_argument('--runtime', required=False, help='[--add] : Set runtime interpreter path. Default: /usr/bin/python3')
+  proc_parser.add_argument('--name', required=False, help='[--add, --delete, --restart] : Set/filter by full process name. Default: filename')
+  proc_parser.add_argument('--path', required=False, help='[--delete, --restart] : Filter by partial process path')
+  proc_parser.set_defaults(func=run_command)
+    
+  args = parser.parse_args()
+
+  if args.command is not None:
+      args.func(parser, args)
+  else:
+      parser.print_help()
+
+if __name__ == "__main__":
+  if os.geteuid() != 0:
+    print("CLI must run as root")
+    sys.exit(9)
+  run()
