@@ -22,6 +22,7 @@ class Socket:
 
     self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
     self.socket.bind(self.socket_path)
+    os.chmod(self.socket_path, 0o700)
 
   def listen(self, callback : type(lambda x: None)):
     """
