@@ -50,7 +50,7 @@ class Socket:
       os.remove(self.socket_path)
       
     self.socket = await asyncio.start_unix_server(self.async_process, path=self.socket_path)
-
+    os.chmod(self.socket_path, 0o700)
     async with self.socket:
         await self.socket.serve_forever()
 
