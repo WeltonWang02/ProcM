@@ -88,10 +88,7 @@ class Process:
     self.poll()
     
     if self.running != True:
-      if self.pwd:
-        await async_exec_shell(f"nohup bash -c 'cd {self.pwd}; exec -a procm_p_{self.name} {self.inter} {self.file}' >/dev/null 2>&1 &")
-      else:
-        await async_exec_shell(f"nohup bash -c 'exec -a procm_p_{self.name} {self.inter} {self.file}' >/dev/null 2>&1 &")
+      await async_exec_shell(f"nohup bash -c 'cd {self.pwd}; exec -a procm_p_{self.name} {self.inter} {self.file}' >/dev/null 2>&1 &", self.pwd)
       self.running = True
       self.poll()
         
