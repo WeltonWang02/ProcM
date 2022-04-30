@@ -192,7 +192,7 @@ class Config():
         (dict) process data
     """
     possible_procs = [ l for l in self.config['processes'] if self.__match(criteria, l) ]
-    return  [ p for p in possible_procs if (os.path.isfile(p['path']) and self.__user_exists(p['user']) ]
+    return  [ p for p in possible_procs if (os.path.isfile(p['path']) and self.__user_exists(p['user'])) ]
 
   def get_broken_procs(self, criteria : dict):
     """
@@ -204,7 +204,7 @@ class Config():
         (dict) process data
     """
     possible_procs = [ l for l in self.config['processes'] if self.__match(criteria, l) ]
-    return  [ p for p in possible_procs if not os.path.isfile(p['path']) or not self.__user_exists(p['user'] ]
+    return  [ p for p in possible_procs if not os.path.isfile(p['path']) or not self.__user_exists(p['user']) ]
     
         
         
