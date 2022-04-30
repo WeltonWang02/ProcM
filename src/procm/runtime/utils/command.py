@@ -4,7 +4,7 @@
 import subprocess
 import asyncio
 import os, pwd
-from .errors import *
+from ..errors import *
 
 def exec_shell(command : str, cwd : str = None, user : str = "root"):
     """
