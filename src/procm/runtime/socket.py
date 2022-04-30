@@ -83,10 +83,9 @@ class Socket:
     try:
       with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
         client.connect(self.socket_path)
-        
         client.send(message.encode())
         client.close()
-    except (ConnectionRefusedError) as e:
+    except (ConnectionRefusedError, FileNotFoundError) as e:
       raise WorkerConnectionError("Connection to worker refused. Is the service running?")
 
   

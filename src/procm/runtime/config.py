@@ -4,6 +4,7 @@
 import os
 import json
 from .errors import *
+import pwd
 
 class Config():
   
