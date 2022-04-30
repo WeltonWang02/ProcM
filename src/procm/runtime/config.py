@@ -49,7 +49,7 @@ class Config():
         (bool) true if user exists
     """
     try:
-      pwd.getpwnam(process['user'])
+      pwd.getpwnam(user)
       return True
     except KeyError:
       return False
@@ -79,7 +79,6 @@ class Config():
       if 'pwd' in process and not os.path.isdir(process['pwd']):
         raise ConfigFileError(f"Invalid config file process item: invalid working directory {process['pwd']} specified in: {process}")
 
-    
   def reload(self):
     """
       Re-reads the config file and updates config variable
@@ -118,7 +117,7 @@ class Config():
       @return
         (bool) true if exists
     """
-    return any([ process['name'] == proc['name'] for process in self.config['processes']])
+    return any([process['name'] == proc['name'] for process in self.config['processes']])
 
   def append_proc(self, proc : dict):
     """
