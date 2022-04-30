@@ -37,7 +37,7 @@ async def async_exec_shell(command : str, cwd : str = None, user : str = "root")
         (string) stdout if stderr is empty, else stderr 
     """
     process = await asyncio.create_subprocess_shell(
-        "bash ~/.bash_profile; " + command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd=cwd, preexec_fn=drop_perms(user)
+        "source ~/.bash_profile; " + command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd=cwd, preexec_fn=drop_perms(user)
     )
 
     stdout, stderr = await process.communicate()
