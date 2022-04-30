@@ -38,6 +38,21 @@ class Config():
         (bool) true if process matches
     """
     return (crit.get('path') and crit.get('path') in p['path']) or (crit.get('name') and crit.get('name') == p['name']) or crit.get('all') == True
+  
+  def __user_exists(self, user : str):
+    """
+      Determine if a user exists
+
+      @params
+        user = Required : username
+      @return
+        (bool) true if user exists
+    """
+    try:
+      pwd.getpwnam(process['user'])
+      return True
+    except KeyError:
+      return False
 
   def validate(self):
     """
@@ -57,11 +72,8 @@ class Config():
         raise ConfigFileError(f"Invalid config file process item: missing {missing} key in: {process}")
 
       # ensure system users exist
-      if 'user' in process:
-        try:
-            pwd.getpwnam(process['user'])
-        except KeyError:
-            raise ConfigFileError(f"Invalid config file process item: invalid user {process['user']} specified in: {process}")
+      if 'user' in process and not self.__user_exists(process['user']):
+        raise ConfigFileError(f"Invalid config file process item: invalid user {process['user']} specified in: {process}")
 
       # ensure pwds exist
       if 'pwd' in process and not os.path.isdir(process['pwd']):
@@ -180,7 +192,7 @@ class Config():
         (dict) process data
     """
     possible_procs = [ l for l in self.config['processes'] if self.__match(criteria, l) ]
-    return  [ p for p in possible_procs if os.path.isfile(p['path']) ]
+    return  [ p for p in possible_procs if (os.path.isfile(p['path']) and self.__user_exists(p['user']) ]
 
   def get_broken_procs(self, criteria : dict):
     """
@@ -192,7 +204,7 @@ class Config():
         (dict) process data
     """
     possible_procs = [ l for l in self.config['processes'] if self.__match(criteria, l) ]
-    return  [ p for p in possible_procs if not os.path.isfile(p['path']) ]
+    return  [ p for p in possible_procs if not os.path.isfile(p['path']) or not self.__user_exists(p['user'] ]
     
         
         

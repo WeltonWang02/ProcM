@@ -55,7 +55,7 @@ def run_command(parser, args):
         procs = procm.core.fetch_processes()
         broken = procm.core.fetch_broken_processes()
         if len(procs) > 0:
-          print(tabulate(procs, headers=['Name', 'File', 'Status', "Runtime", "Working Dir.", "Running"]))
+          print(tabulate(procs, headers=['Name', 'File', 'Status', "Runtime", "Working Dir.", "Run-as",  "Running"]))
 
           if len(broken) > 0:
             print("\nThe following procs are currently invalid:\n")
