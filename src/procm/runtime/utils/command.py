@@ -65,8 +65,7 @@ def drop_perms(user : str):
     """wrapper function"""
     os.setgid(pwdu.pw_uid)
     os.setuid(pwdu.pw_gid)
-    env = os.environ.copy()
-    env.update({'HOME': pwdu.pw_dir, 'LOGNAME': user, 'USER': user, 'USERNAME': user, ''})
+    os.environ.update({'HOME': pwdu.pw_dir, 'LOGNAME': user, 'USER': user, 'USERNAME': user})
     os.environ.pop('MAIL', None)
 
   return func
