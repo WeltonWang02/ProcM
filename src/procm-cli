@@ -59,7 +59,7 @@ def run_command(parser, args):
 
           if len(broken) > 0:
             print("\nThe following procs are currently invalid:\n")
-            print(tabulate(broken, headers=['Name', 'File', 'Status', "Runtime", "Working Dir.", "Running"]))
+            print(tabulate(broken, headers=['Name', 'File', 'Status', "Runtime", "Working Dir.", "Run-as", "Running"]))
         else:
           print("No processes set. Add one with --add")
 
@@ -76,6 +76,8 @@ def run_command(parser, args):
           proc['name'] = args.name
         if args.pwd:
           proc['pwd'] = args.pwd
+        if args.user:
+          proc['user'] = args.user
 
         if " " in proc['name']:
           print("ERROR: Process name cannot have spaces")
@@ -164,6 +166,7 @@ def run():
   proc_parser.add_argument('--name', required=False, help='[--add, --delete, --restart] : Set/filter by full process name. Default: filename')
   proc_parser.add_argument('--path', required=False, help='[--delete, --restart] : Filter by partial process path')
   proc_parser.add_argument('--pwd', required=False, help='[--add] : Set the pwd when running the script')
+  proc_parser.add_argument('--user', required=False, help='[--add] : Set the system user to run as when running the script')
   proc_parser.set_defaults(func=run_command)
     
   args = parser.parse_args()

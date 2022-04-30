@@ -47,11 +47,25 @@ class Config():
     """
     if not 'processes' in self.config:
       raise ConfigFileError("Invalid config file: missing 'processes' key")
+
     for process in self.config['processes']:
+      # ensure required keys are present  
       keys = ['path', 'status', 'name']
       missing = list(set(keys) - set(process.keys()))
       if len(missing) > 0:
         raise ConfigFileError(f"Invalid config file process item: missing {missing} key in: {process}")
+
+      # ensure system users exist
+      if 'user' in process:
+        try:
+            pwd.getpwnam(process['user'])
+        except KeyError:
+            raise ConfigFileError(f"Invalid config file process item: invalid user {process['user']} specified in: {process}")
+
+      # ensure pwds exist
+      if 'pwd' in process and not os.path.isfile(process['pwd']):
+        raise ConfigFileError(f"Invalid config file process item: invalid working directory {process['pwd']} specified in: {process}")
+
     
   def reload(self):
     """

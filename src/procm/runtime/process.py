@@ -3,7 +3,7 @@ import os, signal, psutil, time, asyncio
 
 class Process:
 
-  def __init__(self, name : str, path : str, status : bool, runtime : str = "/usr/bin/python3",  pwd : str = None):
+  def __init__(self, name : str, path : str, status : bool, runtime : str = "/usr/bin/python3",  pwd : str = None, user : str = "root"):
     """
       Initialize variables
 
@@ -12,6 +12,7 @@ class Process:
         path = Required : path to script
         runtime = Optional : runtime executor, defaults to python3
         pwd = Optional : script runtime working directory, defaults to None
+        user = Optional : system username to run process as
       @return
         None
     """
@@ -21,6 +22,7 @@ class Process:
     self.inter = runtime
     self.running = False
     self.pwd = pwd
+    self.user = user
     self.poll()
 
   def __repr__(self):
@@ -30,7 +32,7 @@ class Process:
       @return
         (dict) process path, status, run status, and runtime
     """
-    return str({"name":self.name, "path": self.file, "status": self.proc_stat, "runtime": self.inter, "running": self.running, "pwd": self.pwd})
+    return str({"name":self.name, "path": self.file, "status": self.proc_stat, "runtime": self.inter, "running": self.running, "pwd": self.pwd, "user": self.user})
 
   def __iter__(self):
     """
@@ -40,7 +42,7 @@ class Process:
         (list) dict keys
     """
     enabled = "Enabled" if self.proc_stat else "Disabled"
-    return iter([self.name, self.file, enabled, self.inter, self.pwd, self.running])
+    return iter([self.name, self.file, enabled, self.inter, self.pwd, self.user, self.running])
 
   def poll(self):
     """
@@ -88,7 +90,7 @@ class Process:
     self.poll()
     
     if self.running != True:
-      await async_exec_shell(f"nohup bash -c 'cd {self.pwd}; exec -a procm_p_{self.name} {self.inter} {self.file}' >/dev/null 2>&1 &", self.pwd)
+      await async_exec_shell(f"nohup bash -c 'cd {self.pwd}; exec -a procm_p_{self.name} {self.inter} {self.file}' >/dev/null 2>&1 &", self.pwd, self.user)
       self.running = True
       self.poll()
         
