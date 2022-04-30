@@ -64,7 +64,7 @@ class Config():
             raise ConfigFileError(f"Invalid config file process item: invalid user {process['user']} specified in: {process}")
 
       # ensure pwds exist
-      if 'pwd' in process and not os.path.isfile(process['pwd']):
+      if 'pwd' in process and not os.path.isdir(process['pwd']):
         raise ConfigFileError(f"Invalid config file process item: invalid working directory {process['pwd']} specified in: {process}")
 
     
