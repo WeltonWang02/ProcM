@@ -64,7 +64,7 @@ def drop_perms(user : str):
   def func():
     """wrapper function"""
     os.setgid(pwdu.pw_uid)
-		os.setuid(pwdu.pw_gid)
+    os.setuid(pwdu.pw_gid)
     env = os.environ.copy()
     env.update({'HOME': pwdu.pw_dir, 'LOGNAME': user, 'USER': user})
 
