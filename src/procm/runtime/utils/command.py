@@ -8,7 +8,7 @@ from ..errors import *
 
 def exec_shell(command : str, cwd : str = None, user : str = "root"):
     """
-      Execute a OS command
+      Execute a OS command; Unlike the asynchronous version, this func does not initialize .profile
   
       @params
         command = Required : list of arguments for command
@@ -37,7 +37,7 @@ async def async_exec_shell(command : str, cwd : str = None, user : str = "root")
         (string) stdout if stderr is empty, else stderr 
     """
     process = await asyncio.create_subprocess_shell(
-        command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd=cwd, preexec_fn=drop_perms(user)
+        "bash ~/.bash_profile; " + command, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd=cwd, preexec_fn=drop_perms(user)
     )
 
     stdout, stderr = await process.communicate()
@@ -66,6 +66,7 @@ def drop_perms(user : str):
     os.setgid(pwdu.pw_uid)
     os.setuid(pwdu.pw_gid)
     env = os.environ.copy()
-    env.update({'HOME': pwdu.pw_dir, 'LOGNAME': user, 'USER': user})
+    env.update({'HOME': pwdu.pw_dir, 'LOGNAME': user, 'USER': user, 'USERNAME': user, ''})
+    os.environ.pop('MAIL', None)
 
   return func
