@@ -46,6 +46,8 @@ optional arguments:
   --path PATH        [--delete, --restart] : Filter by partial process path
   --pwd PATH         [--add] : Set the pwd when running the script
 ```
+A config file is located in ~/procm_config.json
+
 ## Examples
 
 **Case:** Setup a script located at /home/user/script.py called "Script"
@@ -79,7 +81,7 @@ optional arguments:
 ## TODO
 - Run-as user support
 ## Requirements
-- Unix based OS
+- Unix based OS with systemd
 - Python 3.6+
 - `tabulate` and `psutils` packages
 - Root permissions
