@@ -79,7 +79,8 @@ A config file is located in ~/procm_config.json
 **Run:** `./procm-cli procs --stop-all && ./procm-cli procs --start-all`
 
 ## TODO
-- Run-as user support
+- ~Run-as user support~
+- Capture stdout 
 ## Requirements
 - Unix based OS with systemd
 - Python 3.6+
