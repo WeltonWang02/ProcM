@@ -11,7 +11,7 @@ def detect_systemd():
       @return
         (bool) if systemd file is present and valid
     """
-    if os.path.isfile("/usr/lib/systemd/system/python-procm.service") and not exec_shell("systemd-analyze verify python-procm.service"):
+    if os.path.isfile("/usr/lib/systemd/system/python-procm.service"):
       return True
     return False
 
